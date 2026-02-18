@@ -3,7 +3,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import InputForm from './components/InputForm';
 import ResultCard from './components/ResultCard';
-import LoadingSpinner from './components/LoadingSpinner';
+import ChefLoader from './components/ChefLoader';
+import TrashAnimation from './components/TrashAnimation';
 import { ChefHat, AlertCircle, Clock, Trash2, X } from 'lucide-react';
 
 function App() {
@@ -20,6 +21,9 @@ function App() {
     }
   });
   const [showClearModal, setShowClearModal] = useState(false);
+  const [deletingId, setDeletingId] = useState(null); // Track which item is being animated
+  const [itemToDelete, setItemToDelete] = useState(null); // Track item pending deletion
+  const [trashAnimation, setTrashAnimation] = useState(null); // { itemName: string, id: number } or null
 
   // Save history to local storage whenever it changes
   useEffect(() => {
@@ -51,16 +55,35 @@ function App() {
   };
 
   const confirmClearHistory = () => {
-    setHistory([]);
-    setShowClearModal(false);
+    if (itemToDelete) {
+      // Single item deletion with advanced animation
+      const item = history.find(i => i.id === itemToDelete);
+      setTrashAnimation({ itemName: item?.foodName || 'Recipe', id: itemToDelete });
+      setShowClearModal(false);
+
+      // Actual deletion happens after animation callback
+    } else {
+      // Clear all
+      setHistory([]);
+      setShowClearModal(false);
+    }
+  };
+
+  const handleAnimationComplete = () => {
+    if (trashAnimation) {
+      setHistory(prev => prev.filter(item => item.id !== trashAnimation.id));
+      if (result && result.id === trashAnimation.id) {
+        setResult(null);
+      }
+      setTrashAnimation(null);
+      setItemToDelete(null);
+    }
   };
 
   const deleteRecipe = (e, id) => {
-    e.stopPropagation(); // Prevent triggering the loadFromHistory
-    setHistory(prev => prev.filter(item => item.id !== id));
-    if (result && result.id === id) {
-      setResult(null); // Clear view if we deleted the active item
-    }
+    e.stopPropagation();
+    setItemToDelete(id);
+    setShowClearModal(true);
   };
 
   return (
@@ -92,7 +115,10 @@ function App() {
                 </h3>
                 {history.length > 0 && (
                   <button
-                    onClick={() => setShowClearModal(true)}
+                    onClick={() => {
+                      setItemToDelete(null);
+                      setShowClearModal(true);
+                    }}
                     className="text-xs text-red-500 hover:text-red-700 flex items-center transition-colors"
                   >
                     <Trash2 className="w-3 h-3 mr-1" /> Clear All
@@ -108,6 +134,7 @@ function App() {
                       key={meal.id}
                       onClick={() => loadFromHistory(meal)}
                       className={`group relative p-3 rounded-lg cursor-pointer transition-all border text-sm
+                                        ${deletingId === meal.id ? 'animate-throw-trash' : ''}
                                         ${result?.id === meal.id ? 'bg-orange-50 border-orange-200 shadow-sm' : 'bg-gray-50 border-transparent hover:bg-white hover:shadow-sm hover:border-gray-200'}`}
                     >
                       <div className="flex justify-between items-start">
@@ -150,7 +177,7 @@ function App() {
             <div className="mt-8 transition-all duration-500 ease-in-out">
               {loading && (
                 <div className="flex justify-center py-12">
-                  <LoadingSpinner />
+                  <ChefLoader />
                 </div>
               )}
 
@@ -180,7 +207,10 @@ function App() {
                 </h3>
                 {history.length > 0 && (
                   <button
-                    onClick={() => setShowClearModal(true)}
+                    onClick={() => {
+                      setItemToDelete(null);
+                      setShowClearModal(true);
+                    }}
                     className="text-xs text-red-500 hover:text-red-700 font-medium"
                   >
                     Clear All
@@ -230,9 +260,13 @@ function App() {
               <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mb-4">
                 <Trash2 className="w-6 h-6 text-red-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Clear Cooking History?</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
+                {itemToDelete ? 'Delete Recipe?' : 'Clear Cooking History?'}
+              </h3>
               <p className="text-gray-500 mb-6 text-sm">
-                This will permanently delete all your saved recipes. This action cannot be undone.
+                {itemToDelete
+                  ? 'This recipe will be permanently deleted. Are you sure?'
+                  : 'This will permanently delete all your saved recipes. This action cannot be undone.'}
               </p>
               <div className="flex space-x-3 w-full">
                 <button
@@ -245,7 +279,7 @@ function App() {
                   onClick={confirmClearHistory}
                   className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium transition-colors shadow-lg shadow-red-200"
                 >
-                  Yes, Delete All
+                  {itemToDelete ? 'Delete' : 'Yes, Delete All'}
                 </button>
               </div>
             </div>
@@ -253,9 +287,16 @@ function App() {
         </div>
       )}
 
+      {/* Advanced Trash Animation */}
+      {trashAnimation && (
+        <TrashAnimation
+          itemName={trashAnimation.itemName}
+          onComplete={handleAnimationComplete}
+        />
+      )}
+
     </div>
   );
 }
 
 export default App;
-

@@ -1,3 +1,200 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer utilities {
+    @keyframes stir {
+        0% {
+            transform: rotate(0deg) translateX(10px) rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg) translateX(10px) rotate(-360deg);
+        }
+    }
+
+    @keyframes steam-1 {
+        0% {
+            transform: translateY(0) scale(0.5);
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 0.5;
+        }
+
+        100% {
+            transform: translateY(-20px) scale(1.5);
+            opacity: 0;
+        }
+    }
+
+    @keyframes steam-2 {
+        0% {
+            transform: translateY(0) scale(0.5);
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 0.4;
+        }
+
+        100% {
+            transform: translateY(-25px) scale(1.2);
+            opacity: 0;
+        }
+    }
+
+    @keyframes steam-3 {
+        0% {
+            transform: translateY(0) scale(0.5);
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 0.3;
+        }
+
+        100% {
+            transform: translateY(-18px) scale(1.4);
+            opacity: 0;
+        }
+    }
+
+    .animate-steam-1 {
+        animation: steam-1 2s ease-out infinite;
+        animation-delay: 0s;
+    }
+
+    .animate-steam-2 {
+        animation: steam-2 2.5s ease-out infinite;
+        animation-delay: 0.5s;
+    }
+
+    .animate-steam-3 {
+        animation: steam-3 2.2s ease-out infinite;
+        animation-delay: 1s;
+    }
+
+    @keyframes throw-trash {
+        0% {
+            transform: scale(1) translate(0, 0);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(0.8) translate(20px, -20px) rotate(15deg);
+            opacity: 0.8;
+        }
+
+        100% {
+            transform: scale(0.1) translate(100px, 100px) rotate(90deg);
+            opacity: 0;
+        }
+    }
+
+    .animate-throw-trash {
+        animation: throw-trash 0.5s ease-in forwards;
+    }
+
+    @keyframes trash-enter {
+        0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        60% {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes lid-movement {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        20% {
+            transform: rotate(-45deg) translateY(-10px);
+        }
+
+        /* Open */
+        80% {
+            transform: rotate(-45deg) translateY(-10px);
+        }
+
+        /* Stay Open */
+        100% {
+            transform: rotate(0deg);
+        }
+
+        /* Close */
+    }
+
+    @keyframes item-drop {
+        0% {
+            transform: translateY(-300px) scale(1) rotate(0deg);
+            opacity: 0;
+        }
+
+        20% {
+            transform: translateY(-300px) scale(1) rotate(0deg);
+            opacity: 1;
+        }
+
+        /* Appear top */
+        80% {
+            transform: translateY(100px) scale(0.2) rotate(180deg);
+            opacity: 1;
+        }
+
+        /* Fall in */
+        90% {
+            transform: translateY(120px) scale(0) rotate(180deg);
+            opacity: 0;
+        }
+
+        /* Disappear */
+        100% {
+            opacity: 0;
+        }
+    }
+
+    @keyframes trash-bounce {
+
+        0%,
+        80% {
+            transform: scale(1);
+        }
+
+        90% {
+            transform: scale(1.1) translateY(5px);
+        }
+
+        /* Impact */
+        100% {
+            transform: scale(1) translateY(0);
+        }
+    }
+
+    .animate-trash-enter {
+        animation: trash-enter 0.5s ease-out forwards;
+    }
+
+    .animate-lid {
+        animation: lid-movement 2.5s ease-in-out forwards;
+    }
+
+    .animate-item-drop {
+        animation: item-drop 2.5s ease-in-out forwards;
+    }
+
+    .animate-trash-bounce {
+        animation: trash-bounce 2.5s ease-in-out forwards;
+    }
+}
