@@ -32,7 +32,8 @@ function App() {
     setResult(null);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/generate-meal', formData);
+      const API_URL = import.meta.env.VITE_SERVER_URL || 'http://localhost:5000';
+      const response = await axios.post(`${API_URL}/api/generate-meal`, formData);
       const newMeal = { ...response.data, id: Date.now(), ...formData }; // Add ID and request details
       setResult(newMeal);
       setHistory(prev => [newMeal, ...prev]); // Add to history
