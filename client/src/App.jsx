@@ -58,7 +58,11 @@ function App() {
     if (itemToDelete) {
       // Single item deletion with advanced animation
       const item = history.find(i => i.id === itemToDelete);
-      setTrashAnimation({ itemName: item?.foodName || 'Recipe', id: itemToDelete });
+      setTrashAnimation({
+        itemName: item?.foodName || 'Recipe',
+        id: itemToDelete,
+        emoji: item?.emoji
+      });
       setShowClearModal(false);
 
       // Actual deletion happens after animation callback
@@ -291,6 +295,7 @@ function App() {
       {trashAnimation && (
         <TrashAnimation
           itemName={trashAnimation.itemName}
+          emoji={trashAnimation.emoji}
           onComplete={handleAnimationComplete}
         />
       )}
